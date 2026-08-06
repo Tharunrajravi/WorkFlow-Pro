@@ -1,0 +1,29 @@
+@model WorkflowPro.Models.Document
+@{
+    ViewBag.Title = "Delete Document";
+}
+
+<h4 class="fw-bold mb-3 text-danger"><i class="bi bi-trash me-2"></i>Delete Document</h4>
+
+<div class="card border-danger">
+    <div class="card-body">
+        <p>Are you sure you want to delete the following document? This will remove both the record and the stored file.</p>
+
+        <dl class="row">
+            <dt class="col-sm-3">Title</dt>
+            <dd class="col-sm-9">@Model.Title</dd>
+            <dt class="col-sm-3">File Name</dt>
+            <dd class="col-sm-9">@Model.FileName</dd>
+            <dt class="col-sm-3">Uploaded By</dt>
+            <dd class="col-sm-9">@Model.UploadedBy</dd>
+        </dl>
+
+        @using (Html.BeginForm("Delete", "Document", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.DocumentId)
+            <button type="submit" class="btn btn-danger"><i class="bi bi-trash me-1"></i>Delete</button>
+            <a href="@Url.Action("Index")" class="btn btn-outline-secondary">Cancel</a>
+        }
+    </div>
+</div>

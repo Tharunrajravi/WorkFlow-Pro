@@ -1,0 +1,37 @@
+@model WorkflowPro.Models.Department
+@{
+    ViewBag.Title = "Delete Department";
+}
+
+<h4 class="fw-bold mb-3 text-danger"><i class="bi bi-trash me-2"></i>Delete Department</h4>
+
+<div class="card border-danger">
+    <div class="card-body">
+        <p>Are you sure you want to delete the following department? This action cannot be undone.</p>
+
+        @if (ViewBag.HasEmployees == true)
+        {
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                This department has employees assigned to it. Reassign or remove those employees before deleting it.
+            </div>
+        }
+
+        <dl class="row">
+            <dt class="col-sm-3">Department Name</dt>
+            <dd class="col-sm-9">@Model.DepartmentName</dd>
+            <dt class="col-sm-3">Description</dt>
+            <dd class="col-sm-9">@(string.IsNullOrWhiteSpace(Model.Description) ? "—" : Model.Description)</dd>
+        </dl>
+
+        @using (Html.BeginForm("Delete", "Department", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.DepartmentId)
+            <button type="submit" class="btn btn-danger" @(ViewBag.HasEmployees == true ? "disabled" : "")>
+                <i class="bi bi-trash me-1"></i>Delete
+            </button>
+            <a href="@Url.Action("Index")" class="btn btn-outline-secondary">Cancel</a>
+        }
+    </div>
+</div>

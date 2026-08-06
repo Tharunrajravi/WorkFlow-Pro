@@ -1,0 +1,31 @@
+@model WorkflowPro.Models.Employee
+@{
+    ViewBag.Title = "Delete Employee";
+}
+
+<h4 class="fw-bold mb-3 text-danger"><i class="bi bi-trash me-2"></i>Delete Employee</h4>
+
+<div class="card border-danger">
+    <div class="card-body">
+        <p>Are you sure you want to delete the following employee? This action cannot be undone.</p>
+
+        <div class="d-flex align-items-center mb-3">
+            @if (!string.IsNullOrEmpty(Model.ProfilePhotoPath))
+            {
+                <img src="@Url.Content("~/Uploads/Employees/" + Model.ProfilePhotoPath)" class="avatar-thumb me-3" alt="@Model.FullName" />
+            }
+            <div>
+                <div class="fw-semibold">@Model.FullName (@Model.EmployeeCode)</div>
+                <div class="text-muted small">@Model.Department?.DepartmentName &middot; @Model.Designation</div>
+            </div>
+        </div>
+
+        @using (Html.BeginForm("Delete", "Employee", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.EmployeeId)
+            <button type="submit" class="btn btn-danger"><i class="bi bi-trash me-1"></i>Delete</button>
+            <a href="@Url.Action("Index")" class="btn btn-outline-secondary">Cancel</a>
+        }
+    </div>
+</div>

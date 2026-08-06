@@ -1,0 +1,63 @@
+@model IEnumerable<WorkflowPro.Models.Document>
+@{
+    ViewBag.Title = "Documents";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="fw-bold mb-0"><i class="bi bi-file-earmark-text-fill me-2"></i>Documents</h4>
+    <a href="@Url.Action("Upload")" class="btn btn-primary"><i class="bi bi-upload me-1"></i>Upload Document</a>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        @using (Html.BeginForm("Index", "Document", FormMethod.Get, new { @class = "row g-2" }))
+        {
+            <div class="col-md-4">
+                <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Search by title or file name..." />
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-search"></i> Search</button>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>File Name</th>
+                    <th>Size</th>
+                    <th>Uploaded By</th>
+                    <th>Uploaded On</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="6" class="text-center text-muted py-4">No documents uploaded yet.</td></tr>
+                }
+                @foreach (var doc in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@doc.Title</td>
+                        <td><i class="bi bi-file-earmark me-1 text-muted"></i>@doc.FileName</td>
+                        <td>@doc.FileSizeKB KB</td>
+                        <td>@doc.UploadedBy</td>
+                        <td>@doc.UploadedDate.ToString("dd MMM yyyy HH:mm")</td>
+                        <td class="text-end">
+                            <a href="@Url.Action("Download", new { id = doc.DocumentId })" class="btn btn-sm btn-outline-primary" title="Download"><i class="bi bi-download"></i></a>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a href="@Url.Action("Delete", new { id = doc.DocumentId })" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

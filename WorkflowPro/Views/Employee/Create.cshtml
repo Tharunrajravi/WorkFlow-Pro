@@ -1,0 +1,80 @@
+@model WorkflowPro.Models.ViewModels.EmployeeViewModel
+@{
+    ViewBag.Title = "New Employee";
+}
+
+<h4 class="fw-bold mb-3"><i class="bi bi-plus-lg me-2"></i>New Employee</h4>
+
+<div class="card">
+    <div class="card-body">
+        @using (Html.BeginForm("Create", "Employee", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+            <div class="row">
+                <div class="col-md-3 text-center mb-4">
+                    <div class="avatar-thumb-lg bg-secondary bg-opacity-25 d-flex align-items-center justify-content-center mx-auto mb-2">
+                        <i class="bi bi-person-fill text-secondary" style="font-size:3rem;"></i>
+                    </div>
+                    <label class="form-label">Profile Photo</label>
+                    <input type="file" name="ProfilePhoto" class="form-control form-control-sm" accept=".jpg,.jpeg,.png,.gif" />
+                    @Html.ValidationMessage("ProfilePhoto", new { @class = "text-danger small d-block" })
+                </div>
+
+                <div class="col-md-9">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            @Html.LabelFor(m => m.EmployeeCode, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.EmployeeCode, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.EmployeeCode, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-md-6">
+                            @Html.LabelFor(m => m.Department, new { @class = "form-label" })
+                            @Html.DropDownListFor(m => m.DepartmentId, Model.Departments, "-- Select Department --", new { @class = "form-select" })
+                            @Html.ValidationMessageFor(m => m.DepartmentId, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-md-6">
+                            @Html.LabelFor(m => m.FirstName, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-md-6">
+                            @Html.LabelFor(m => m.LastName, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-md-6">
+                            @Html.LabelFor(m => m.Email, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-md-6">
+                            @Html.LabelFor(m => m.Phone, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Phone, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-md-6">
+                            @Html.LabelFor(m => m.Designation, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Designation, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Designation, "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-md-6">
+                            @Html.LabelFor(m => m.Salary, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Salary, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Salary, "", new { @class = "text-danger small" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr />
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Save</button>
+            <a href="@Url.Action("Index")" class="btn btn-outline-secondary">Cancel</a>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @Html.Partial("_ValidationScriptsPartial")
+}
