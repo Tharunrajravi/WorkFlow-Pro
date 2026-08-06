@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -7,47 +7,41 @@ namespace WorkflowPro.Models
     [Table("Documents")]
     public class Document
     {
-        public Document()
-        {
-            UploadedDate = DateTime.UtcNow;
-        }
-
         [Key]
-        public int Id { get; set; }
+        public int DocumentId { get; set; }
 
-        [Required(ErrorMessage = "Document title is required.")]
-        [StringLength(200)]
+        [Required, StringLength(200)]
         public string Title { get; set; }
 
-        [StringLength(50)]
-        public string DocumentType { get; set; } // "Contract", "Report", "Invoice", "Policy", "General"
-
-        [Required(ErrorMessage = "File path is required.")]
-        [StringLength(500)]
-        public string FilePath { get; set; }
-
-        [StringLength(255)]
+        [Required, StringLength(260)]
         public string FileName { get; set; }
 
-        [StringLength(100)]
-        public string ContentType { get; set; }
+        [Required, StringLength(500)]
+        public string FilePath { get; set; }
 
-        public long FileSizeByte { get; set; }
+        [StringLength(20)]
+        public string FileType { get; set; }
 
+        public int? FileSizeKB { get; set; }
+
+        [ForeignKey("Employee")]
         public int? EmployeeId { get; set; }
-
-        [ForeignKey("EmployeeId")]
         public virtual Employee Employee { get; set; }
 
+        [ForeignKey("Project")]
         public int? ProjectId { get; set; }
-
-        [ForeignKey("ProjectId")]
         public virtual Project Project { get; set; }
 
-        [StringLength(100)]
-        public string UploadedBy { get; set; }
+        [ForeignKey("Department")]
+        public int? DepartmentId { get; set; }
+        public virtual Department Department { get; set; }
 
-        public DateTime UploadedDate { get; set; }
+        [ForeignKey("UploadedByUser")]
+        public int UploadedByUserId { get; set; }
+        public virtual User UploadedByUser { get; set; }
+
+        public DateTime UploadedOn { get; set; }
+
+        public bool IsActive { get; set; }
     }
 }
-

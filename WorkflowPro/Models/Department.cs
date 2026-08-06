@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -8,34 +8,26 @@ namespace WorkflowPro.Models
     [Table("Departments")]
     public class Department
     {
-        public Department()
-        {
-            IsActive = true;
-            CreatedDate = DateTime.UtcNow;
-            Employees = new HashSet<Employee>();
-            Projects = new HashSet<Project>();
-        }
-
         [Key]
-        public int Id { get; set; }
+        public int DepartmentId { get; set; }
 
-        [Required(ErrorMessage = "Department name is required.")]
-        [StringLength(100, MinimumLength = 2, ErrorMessage = "Department name must be between 2 and 100 characters.")]
-        public string DepartmentName { get; set; }
+        [Required, StringLength(150)]
+        public string Name { get; set; }
 
-        [Required(ErrorMessage = "Department code is required.")]
-        [StringLength(20, MinimumLength = 2, ErrorMessage = "Department code must be between 2 and 20 characters.")]
+        [Required, StringLength(20)]
         public string Code { get; set; }
 
-        [StringLength(250, ErrorMessage = "Description cannot exceed 250 characters.")]
+        [StringLength(500)]
         public string Description { get; set; }
 
         public bool IsActive { get; set; }
 
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedOn { get; set; }
+
+        public DateTime? ModifiedOn { get; set; }
 
         public virtual ICollection<Employee> Employees { get; set; }
         public virtual ICollection<Project> Projects { get; set; }
+        public virtual ICollection<Document> Documents { get; set; }
     }
 }
-

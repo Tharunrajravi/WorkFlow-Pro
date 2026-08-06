@@ -1,52 +1,52 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WorkflowPro.Models
 {
+    public static class UserRoles
+    {
+        public const string Admin = "Admin";
+        public const string HR = "HR";
+        public const string Manager = "Manager";
+        public const string Employee = "Employee";
+    }
+
     [Table("Users")]
     public class User
     {
-        public User()
-        {
-            IsActive = true;
-            CreatedDate = DateTime.UtcNow;
-            AuditLogs = new HashSet<AuditLog>();
-        }
-
         [Key]
-        public int Id { get; set; }
+        public int UserId { get; set; }
 
-        [Required(ErrorMessage = "Username is required.")]
-        [StringLength(50, MinimumLength = 3, ErrorMessage = "Username must be between 3 and 50 characters.")]
+        [Required, StringLength(100)]
         public string Username { get; set; }
 
-        [Required(ErrorMessage = "Password hash is required.")]
-        [StringLength(256)]
-        public string PasswordHash { get; set; }
-
-        [Required(ErrorMessage = "Email address is required.")]
-        [StringLength(100)]
-        [EmailAddress(ErrorMessage = "Invalid email address format.")]
+        [Required, StringLength(150)]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "User role is required.")]
-        [StringLength(30)]
-        public string Role { get; set; } // "Admin", "Manager", "Employee", "HR", "Finance"
+        [Required, StringLength(256)]
+        public string PasswordHash { get; set; }
+
+        [Required, StringLength(256)]
+        public string PasswordSalt { get; set; }
+
+        [Required, StringLength(50)]
+        public string Role { get; set; }
+
+        [ForeignKey("Employee")]
+        public int? EmployeeId { get; set; }
+        public virtual Employee Employee { get; set; }
 
         public bool IsActive { get; set; }
 
-        public int? EmployeeId { get; set; }
+        public bool IsLocked { get; set; }
 
-        [ForeignKey("EmployeeId")]
-        public virtual Employee Employee { get; set; }
+        public int FailedLoginCount { get; set; }
 
-        public DateTime? LastLoginDate { get; set; }
+        public DateTime? LastLoginOn { get; set; }
 
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedOn { get; set; }
 
-        public virtual ICollection<AuditLog> AuditLogs { get; set; }
+        public DateTime? ModifiedOn { get; set; }
     }
 }
-

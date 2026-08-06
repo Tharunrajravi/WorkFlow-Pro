@@ -1,4 +1,4 @@
-﻿using System.Data.Entity;
+using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 
 namespace WorkflowPro.Models
@@ -7,6 +7,7 @@ namespace WorkflowPro.Models
     {
         public EmployeeDBContext() : base("name=EmployeeDBContext")
         {
+            // Schema is managed via /Database SQL scripts, not EF Migrations.
             Database.SetInitializer<EmployeeDBContext>(null);
         }
 
@@ -14,70 +15,87 @@ namespace WorkflowPro.Models
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Project> Projects { get; set; }
+        public DbSet<ProjectAssignment> ProjectAssignments { get; set; }
         public DbSet<Document> Documents { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
-        public DbSet<Setting> Settings { get; set; }
-        public DbSet<FileMetadata> FileMetadatas { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-
-            // Prevent automatic cascade deletes on all relationships to avoid multiple cascade paths
+            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
             modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
             modelBuilder.Conventions.Remove<ManyToManyCascadeDeleteConvention>();
 
-            // Decimal Precision Configuration
             modelBuilder.Entity<Employee>()
-                .Property(e => e.Salary)
-                .HasPrecision(18, 2);
+                .HasOptional(e => e.ReportingManager)
+                .WithMany(e => e.DirectReports)
+                .HasForeignKey(e => e.ReportingManagerId)
+                .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<Project>()
-                .Property(p => p.Budget)
-                .HasPrecision(18, 2);
-
-            // Department -> Employees (1-to-Many)
-            modelBuilder.Entity<Department>()
-                .HasMany(d => d.Employees)
-                .WithRequired(e => e.Department)
+            modelBuilder.Entity<Employee>()
+                .HasRequired(e => e.Department)
+                .WithMany(d => d.Employees)
                 .HasForeignKey(e => e.DepartmentId)
                 .WillCascadeOnDelete(false);
 
-            // Department -> Projects (1-to-Many)
-            modelBuilder.Entity<Department>()
-                .HasMany(d => d.Projects)
-                .WithRequired(p => p.Department)
+            modelBuilder.Entity<Project>()
+                .HasRequired(p => p.Department)
+                .WithMany(d => d.Projects)
                 .HasForeignKey(p => p.DepartmentId)
                 .WillCascadeOnDelete(false);
 
-            // Employee -> User (Optional 1-to-1 / Foreign Key)
+            modelBuilder.Entity<Project>()
+                .HasOptional(p => p.ProjectManager)
+                .WithMany()
+                .HasForeignKey(p => p.ProjectManagerId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<ProjectAssignment>()
+                .HasRequired(pa => pa.Project)
+                .WithMany(p => p.ProjectAssignments)
+                .HasForeignKey(pa => pa.ProjectId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<ProjectAssignment>()
+                .HasRequired(pa => pa.Employee)
+                .WithMany(e => e.ProjectAssignments)
+                .HasForeignKey(pa => pa.EmployeeId)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<User>()
                 .HasOptional(u => u.Employee)
                 .WithMany()
                 .HasForeignKey(u => u.EmployeeId)
                 .WillCascadeOnDelete(false);
 
-            // User -> AuditLogs (1-to-Many)
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.AuditLogs)
-                .WithOptional(a => a.User)
-                .HasForeignKey(a => a.UserId)
-                .WillCascadeOnDelete(false);
-
-            // Employee -> Documents (1-to-Many Optional)
-            modelBuilder.Entity<Employee>()
-                .HasMany(e => e.Documents)
-                .WithOptional(d => d.Employee)
+            modelBuilder.Entity<Document>()
+                .HasOptional(d => d.Employee)
+                .WithMany(e => e.Documents)
                 .HasForeignKey(d => d.EmployeeId)
                 .WillCascadeOnDelete(false);
 
-            // Project -> Documents (1-to-Many Optional)
-            modelBuilder.Entity<Project>()
-                .HasMany(p => p.Documents)
-                .WithOptional(d => d.Project)
+            modelBuilder.Entity<Document>()
+                .HasOptional(d => d.Project)
+                .WithMany(p => p.Documents)
                 .HasForeignKey(d => d.ProjectId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Document>()
+                .HasOptional(d => d.Department)
+                .WithMany(dep => dep.Documents)
+                .HasForeignKey(d => d.DepartmentId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Document>()
+                .HasRequired(d => d.UploadedByUser)
+                .WithMany()
+                .HasForeignKey(d => d.UploadedByUserId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<AuditLog>()
+                .HasOptional(a => a.User)
+                .WithMany()
+                .HasForeignKey(a => a.UserId)
                 .WillCascadeOnDelete(false);
         }
     }
 }
-

@@ -1,57 +1,67 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WorkflowPro.Models
 {
+    public static class ProjectStatus
+    {
+        public const string Planned = "Planned";
+        public const string InProgress = "InProgress";
+        public const string OnHold = "OnHold";
+        public const string Completed = "Completed";
+        public const string Cancelled = "Cancelled";
+    }
+
+    public static class ProjectPriority
+    {
+        public const string Low = "Low";
+        public const string Medium = "Medium";
+        public const string High = "High";
+        public const string Critical = "Critical";
+    }
+
     [Table("Projects")]
     public class Project
     {
-        public Project()
-        {
-            CreatedDate = DateTime.UtcNow;
-            Documents = new HashSet<Document>();
-        }
-
         [Key]
-        public int Id { get; set; }
+        public int ProjectId { get; set; }
 
-        [Required(ErrorMessage = "Project name is required.")]
-        [StringLength(150)]
-        public string ProjectName { get; set; }
-
-        [Required(ErrorMessage = "Project code is required.")]
-        [StringLength(30)]
+        [Required, StringLength(20)]
         public string ProjectCode { get; set; }
 
-        [StringLength(100)]
-        public string ClientName { get; set; }
+        [Required, StringLength(200)]
+        public string Name { get; set; }
 
-        [Required(ErrorMessage = "Start date is required.")]
-        [DataType(DataType.Date)]
-        public DateTime StartDate { get; set; }
+        [StringLength(1000)]
+        public string Description { get; set; }
 
-        [DataType(DataType.Date)]
-        public DateTime? EndDate { get; set; }
-
-        [Range(0, 1000000000, ErrorMessage = "Budget must be a positive number.")]
-        [Column(TypeName = "decimal")]
-        public decimal Budget { get; set; }
-
-        [Required(ErrorMessage = "Project status is required.")]
-        [StringLength(30)]
-        public string Status { get; set; } // "Planning", "In Progress", "Completed", "On Hold"
-
-        [Required(ErrorMessage = "Department is required.")]
+        [ForeignKey("Department")]
         public int DepartmentId { get; set; }
-
-        [ForeignKey("DepartmentId")]
         public virtual Department Department { get; set; }
 
-        public DateTime CreatedDate { get; set; }
+        [ForeignKey("ProjectManager")]
+        public int? ProjectManagerId { get; set; }
+        public virtual Employee ProjectManager { get; set; }
 
+        public DateTime StartDate { get; set; }
+
+        public DateTime? EndDate { get; set; }
+
+        [Required, StringLength(30)]
+        public string Status { get; set; }
+
+        [Required, StringLength(20)]
+        public string Priority { get; set; }
+
+        public bool IsActive { get; set; }
+
+        public DateTime CreatedOn { get; set; }
+
+        public DateTime? ModifiedOn { get; set; }
+
+        public virtual ICollection<ProjectAssignment> ProjectAssignments { get; set; }
         public virtual ICollection<Document> Documents { get; set; }
     }
 }
-
